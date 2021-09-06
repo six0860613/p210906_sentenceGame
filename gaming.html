@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentence Game</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <style>
+        .question-pic {
+            height: 200px;
+            margin-right: 20px;
+        }
+
+        .question-pic img {
+            height: 100%;
+        }
+
+        .question-text>span {
+            font-size: 20px;
+            border: 2px solid gray;
+            border-radius: 10px;
+            padding: 10px;
+            position: relative;
+        }
+
+        .question-text>span::before {
+            position: absolute;
+            content: "";
+            width: 0;
+            height: 0;
+            top: 50%;
+            left: -20px;
+            transform: translateY(-50%);
+            border-width: 10px;
+            border-style: solid;
+            border-color: transparent gray transparent transparent;
+        }
+
+        .question-text>span::after {
+            position: absolute;
+            content: "";
+            width: 0;
+            height: 0;
+            top: 50%;
+            left: -15px;
+            transform: translateY(-50%);
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent white transparent transparent;
+        }
+
+        .answer {
+            height: 50px;
+            width: 100%;
+            background-color: rgb(235, 235, 235);
+            border: 2px solid gray;
+            border-left: transparent;
+            border-right: transparent;
+            display: flex;
+        }
+
+        .word {
+            background-color: #afa;
+            border: 1px solid black;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .word:hover {
+            opacity: 0.8;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container mt-3">
+        <div class="row my-3">
+            <h3>用英文拼出此句子</h3>
+        </div>
+        <div class="row">
+            <div class="question-pic"><img src="./imgs/01.png" alt=""></div>
+            <div class="question-text d-flex align-items-center"><span>我喜歡你</span></div>
+        </div>
+        <div class="row my-3">
+            <div class="answer"></div>
+        </div>
+        <div class="row selectWord">
+            <div class="word">I</div>
+            <div class="word">like</div>
+            <div class="word">you</div>
+        </div>
+    </div>
+
+    <script src="./jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+        integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+        crossorigin="anonymous"></script>
+    <script>
+        $('.word').on('click', function () {
+            if($(this).parent().hasClass('selectWord')){
+                $('.answer').append($(this));
+            }else{
+                $('.selectWord').append($(this));
+            }
+            
+        });
+    </script>
+</body>
+
+</html>
