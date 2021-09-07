@@ -53,9 +53,11 @@
             border-color: transparent white transparent transparent;
         }
 
-        .answer {
-            height: 50px;
+        .answer, .selectWord {
+            min-height: 100px;
             width: 100%;
+            margin: 20px 0px;
+            padding: 20px;
             background-color: rgb(235, 235, 235);
             border: 2px solid gray;
             border-left: transparent;
@@ -67,15 +69,15 @@
             background-color: #afa;
             border: 1px solid black;
             border-radius: 10px;
-            padding: 10px 20px;
+            padding: 15px 20px;
             font-size: 16px;
-            margin: 5px;
+            margin: 0px 5px;
             cursor: pointer;
             transition: 0.3s ease;
         }
 
         .word:hover {
-            opacity: 0.8;
+            opacity: 0.6;
         }
     </style>
 
@@ -91,8 +93,7 @@
             <div class="question-pic"><img src="./imgs/01.png" alt=""></div>
             <div class="question-text d-flex align-items-center"><span>我喜歡你</span></div>
         </div>
-        <div class="row my-3">
-            <div class="answer"></div>
+        <div class="row answer">
         </div>
         <div class="row selectWord">
             <div class="word">I</div>
