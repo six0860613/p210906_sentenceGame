@@ -99,14 +99,13 @@
             <div class="question-text d-flex align-items-center"><span>我喜歡你</span></div>
         </div>
         <div class="row answer">
-            <div class="word">you</div>
         </div>
         <div class="row selectWord">
             <div class="word-bg">
-                <div class="word">I</div>
+                <div class="word">like</div>
             </div>
             <div class="word-bg">
-                <div class="word">like</div>
+                <div class="word">I</div>
             </div>
             <div class="word-bg">
                 <div class="word">you</div>
@@ -122,19 +121,26 @@
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
     <script>
-        $('.word').on('click',function () {
-            console.log($(this));
+        $('.container').on('click', '.word', function () {
+            console.log($(this).text().toString());
             if($(this).parent().hasClass('word-bg')){
                 $(this).css('opacity', 0);
                 // const wLeft = $(this).position().left;
                 // const wTop = $(this).position().top;
-                $(this).clone().appendTo($('.answer')).css('opacity', 1);
+                $(this).clone().appendTo($('.answer')).css('opacity', 1).css('margin', '0px 5px');
+            }else{
+                const content = $(this).text().toString();
+                $('.word-bg>.word').each(function(){
+                    // console.log($(this).text());
+                    if(content === $(this).text()){
+                        $(this).css('opacity', 1);
+                    }
+                });
+                $(this).remove();
             }
         });
-        // $('.answer').children().on('click', function(){
-        //     console.log($(this));
-        // });
+
     </script>
 </body>
-
+<!-- 拖曳式 -->
 </html>
