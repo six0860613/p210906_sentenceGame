@@ -73,6 +73,7 @@
             font-size: 16px;
             cursor: pointer;
             transition: 0.3s ease;
+            position: relative;
         }
         .word-bg {
             background-color: rgb(148, 148, 148);
@@ -80,7 +81,6 @@
             border-radius: 10px;
             margin: 0px 5px;
         }
-
         .word:hover {
             opacity: 0.6;
         }
@@ -128,13 +128,15 @@
         crossorigin="anonymous"></script>
     <script>
         $('.container').on('click', '.word', function () {
-            console.log($(this).text().toString());
+            // TODO: 用positiont relative+absoulte重寫 active加入translate 用toggleClass
+            // console.log($(this).text().toString());
             if($(this).parent().hasClass('word-bg')){
                 $(this).css('opacity', 0);
-                const wLeft = $(this).position().left;
-                const wTop = $(this).position().top;
-                console.log('Word:', wLeft, wTop);
-                $(this).clone().appendTo($('.answer')).css('opacity', 1).css('margin', '0px 5px');
+                const wordUp = $(this).clone();
+                wordUp.appendTo($('.answer')).css('opacity', 1).css('margin', '0px 5px');
+                const wLeft = wordUp.position().left;
+                const wTop = wordUp.position().top;
+                // console.log('Word:', wLeft, wTop);
             }else{
                 const content = $(this).text().toString();
                 $('.word-bg>.word').each(function(){
@@ -145,12 +147,11 @@
                 });
                 const aLeft = $(this).position().left;
                 const aTop = $(this).position().top;
-                console.log('Answer:', aLeft, aTop);
+                // console.log('Answer:', aLeft, aTop);
                 $(this).remove();
             }
         });
 
     </script>
 </body>
-<!-- 拖曳式 -->
 </html>
