@@ -96,19 +96,25 @@
         </div>
         <div class="row">
             <div class="question-pic"><img src="./imgs/01.png" alt=""></div>
-            <div class="question-text d-flex align-items-center"><span>我喜歡你</span></div>
+            <div class="question-text d-flex align-items-center"><span>我喜歡吃義大利麵</span></div>
         </div>
         <div class="row answer">
         </div>
         <div class="row selectWord">
             <div class="word-bg">
-                <div class="word">like</div>
+                <div class="word">to</div>
             </div>
             <div class="word-bg">
                 <div class="word">I</div>
             </div>
             <div class="word-bg">
-                <div class="word">you</div>
+                <div class="word">eat</div>
+            </div>
+            <div class="word-bg">
+                <div class="word">spaghetti</div>
+            </div>
+            <div class="word-bg">
+                <div class="word">like</div>
             </div>
         </div>
     </div>
@@ -125,8 +131,9 @@
             console.log($(this).text().toString());
             if($(this).parent().hasClass('word-bg')){
                 $(this).css('opacity', 0);
-                // const wLeft = $(this).position().left;
-                // const wTop = $(this).position().top;
+                const wLeft = $(this).position().left;
+                const wTop = $(this).position().top;
+                console.log('Word:', wLeft, wTop);
                 $(this).clone().appendTo($('.answer')).css('opacity', 1).css('margin', '0px 5px');
             }else{
                 const content = $(this).text().toString();
@@ -136,6 +143,9 @@
                         $(this).css('opacity', 1);
                     }
                 });
+                const aLeft = $(this).position().left;
+                const aTop = $(this).position().top;
+                console.log('Answer:', aLeft, aTop);
                 $(this).remove();
             }
         });
