@@ -53,38 +53,47 @@
             border-color: transparent white transparent transparent;
         }
 
+        .answer,
         .selectWord {
-            min-height: 200px;
+            min-height: 100px;
             width: 100%;
             margin: 20px 0px;
             padding: 20px;
-            background-color: rgb(235, 235, 235);
+            background-color: rgba(235, 235, 235, 0.561);
             border: 2px solid gray;
             border-left: transparent;
             border-right: transparent;
-            position: relative;
+            display: flex;
+            box-sizing: border-box;
         }
 
         .word {
-            position: relative;
-            height: 100%;
             background-color: #afa;
-            border: 1px solid black;
             border-radius: 10px;
             padding: 15px 20px;
-            margin-right: 10px;
             font-size: 16px;
             cursor: pointer;
-            transition: 0.3s ease-in-out;
-            transform: translateY(100px);
+            transition: 0.3s ease-out;
         }
 
-        .word.active {
-            transform: translate(-50px, -100px);
+        .word-bg {
+            background-color: rgb(148, 148, 148, 0.5);
+            border-radius: 10px;
+            margin: 0px 5px;
         }
 
         .word:hover {
             opacity: 0.6;
+        }
+
+        .animationWord {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(255, 193, 193);
         }
     </style>
 
@@ -100,12 +109,27 @@
             <div class="question-pic"><img src="./imgs/01.png" alt=""></div>
             <div class="question-text d-flex align-items-center"><span>我喜歡吃義大利麵</span></div>
         </div>
-        <div class="row selectWord">
-            <div class="word">to</div>
-            <div class="word">I</div>
-            <div class="word">eat</div>
-            <div class="word">spaghetti</div>
-            <div class="word">like</div>
+        <div class="row" style="position: relative;">
+            <div class="answer">
+            </div>
+            <div class="selectWord">
+                <div class="word-bg">
+                    <div class="word">like</div>
+                </div>
+                <div class="word-bg">
+                    <div class="word">I</div>
+                </div>
+                <div class="word-bg">
+                    <div class="word">spaghetti</div>
+                </div>
+                <div class="word-bg">
+                    <div class="word">to</div>
+                </div>
+                <div class="word-bg">
+                    <div class="word">eat</div>
+                </div>
+            </div>
+            <div class="animationWord"></div>
         </div>
     </div>
 
@@ -117,14 +141,43 @@
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
     <script>
-        $('.container').on('click', '.word', function () {
-            // TODO: 用positiont relative+absoulte重寫 active加入translate 用toggleClass
-            // console.log($(this).text().toString());
-            $(this).css('transform', `translate(0px, -100px)`);
-            // wordUp.appendTo($('.answer')).css('opacity', 1).css('margin', '0px 5px');
-            const wLeft = $(this).position().left;
-            const wTop = $(this).position().top;
-            console.log('Word:', $(this), wLeft, wTop);
+        $('.container').on('click', '.word', function (e) {
+            if ($(this).parent().hasClass('word-bg')) {
+                const wordToUp = $(this).clone().appendTo($('.answer')).css('opacity', 0).css('margin', '0px 5px');
+                // 查看下層word的座標
+                const dLeft = $(this).position().left;
+                const dTop = $(this).position().top;
+                const wLeft = $(wordToUp).position().left;
+                const wTop = $(wordToUp).position().top;
+                console.log('dL/wL:', dLeft, wLeft);
+                console.log('dT/wT:', dTop, wTop);
+                const wordWidth = $(this).width();
+                const wordAnimation = $(this).clone().appendTo($('.animationWord')).css('transform', `translate(${dLeft}px, ${dTop}px)`).css('width', `${wordWidth + 40}px`);
+
+                // 用計時模擬async await
+                setTimeout(() => {
+                    wordAnimation.css('transform', `translate(${wLeft + 5}px, ${wTop}px)`);
+                }, 100);
+                setTimeout(() => {
+                    wordToUp.css('opacity', 1);
+                    wordAnimation.remove();
+                }, 350);
+                // 把原本的word藏起來
+                $(this).css('opacity', 0);
+            } else {
+                const content = $(this).text().toString();
+                $('.word-bg>.word').each(function () {
+                    if (content === $(this).text()) {
+                        $(this).css('opacity', 1);
+                    }
+                });
+                // 查看上層word的座標
+                const uLeft = $(this).position().left;
+                const uTop = $(this).position().top;
+                console.log('uL:', uLeft);
+                console.log('uT:', uTop);
+                $(this).remove();
+            }
         });
 
     </script>
