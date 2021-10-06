@@ -53,8 +53,8 @@
             border-color: transparent white transparent transparent;
         }
 
-        .answer, .selectWord {
-            min-height: 100px;
+        .selectWord {
+            min-height: 200px;
             width: 100%;
             margin: 20px 0px;
             padding: 20px;
@@ -62,25 +62,27 @@
             border: 2px solid gray;
             border-left: transparent;
             border-right: transparent;
-            display: flex;
+            position: relative;
         }
 
-        .word{
+        .word {
+            position: relative;
+            height: 100%;
             background-color: #afa;
             border: 1px solid black;
             border-radius: 10px;
             padding: 15px 20px;
+            margin-right: 10px;
             font-size: 16px;
             cursor: pointer;
-            transition: 0.3s ease;
-            position: relative;
+            transition: 0.3s ease-in-out;
+            transform: translateY(100px);
         }
-        .word-bg {
-            background-color: rgb(148, 148, 148);
-            border: 1px solid black;
-            border-radius: 10px;
-            margin: 0px 5px;
+
+        .word.active {
+            transform: translate(-50px, -100px);
         }
+
         .word:hover {
             opacity: 0.6;
         }
@@ -98,24 +100,12 @@
             <div class="question-pic"><img src="./imgs/01.png" alt=""></div>
             <div class="question-text d-flex align-items-center"><span>我喜歡吃義大利麵</span></div>
         </div>
-        <div class="row answer">
-        </div>
         <div class="row selectWord">
-            <div class="word-bg">
-                <div class="word">to</div>
-            </div>
-            <div class="word-bg">
-                <div class="word">I</div>
-            </div>
-            <div class="word-bg">
-                <div class="word">eat</div>
-            </div>
-            <div class="word-bg">
-                <div class="word">spaghetti</div>
-            </div>
-            <div class="word-bg">
-                <div class="word">like</div>
-            </div>
+            <div class="word">to</div>
+            <div class="word">I</div>
+            <div class="word">eat</div>
+            <div class="word">spaghetti</div>
+            <div class="word">like</div>
         </div>
     </div>
 
@@ -130,28 +120,14 @@
         $('.container').on('click', '.word', function () {
             // TODO: 用positiont relative+absoulte重寫 active加入translate 用toggleClass
             // console.log($(this).text().toString());
-            if($(this).parent().hasClass('word-bg')){
-                $(this).css('opacity', 0);
-                const wordUp = $(this).clone();
-                wordUp.appendTo($('.answer')).css('opacity', 1).css('margin', '0px 5px');
-                const wLeft = wordUp.position().left;
-                const wTop = wordUp.position().top;
-                // console.log('Word:', wLeft, wTop);
-            }else{
-                const content = $(this).text().toString();
-                $('.word-bg>.word').each(function(){
-                    // console.log($(this).text());
-                    if(content === $(this).text()){
-                        $(this).css('opacity', 1);
-                    }
-                });
-                const aLeft = $(this).position().left;
-                const aTop = $(this).position().top;
-                // console.log('Answer:', aLeft, aTop);
-                $(this).remove();
-            }
+            $(this).css('transform', `translate(0px, -100px)`);
+            // wordUp.appendTo($('.answer')).css('opacity', 1).css('margin', '0px 5px');
+            const wLeft = $(this).position().left;
+            const wTop = $(this).position().top;
+            console.log('Word:', $(this), wLeft, wTop);
         });
 
     </script>
 </body>
+
 </html>
