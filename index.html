@@ -59,12 +59,17 @@
             width: 100%;
             margin: 20px 0px;
             padding: 20px;
-            /* background-color: rgba(235, 235, 235, 0.561); */
+            background-color: rgba(235, 235, 235, 0.5);
             border: 2px solid gray;
             border-left: transparent;
             border-right: transparent;
             display: flex;
             box-sizing: border-box;
+            flex-wrap: wrap;
+        }
+
+        .answer {
+            min-height: 110px;
         }
 
         .word {
@@ -78,7 +83,7 @@
         .word-bg {
             background-color: rgb(148, 148, 148, 0.5);
             border-radius: 10px;
-            margin: 0px 5px;
+            margin: 5px;
         }
 
         .word:hover {
@@ -92,7 +97,7 @@
             z-index: -1;
             width: 100%;
             height: 100%;
-            background-color: rgb(255, 193, 193);
+            background-color: rgb(255, 193, 193, 0);
         }
     </style>
 
@@ -106,7 +111,7 @@
         </div>
         <div class="row">
             <div class="question-pic"><img src="./imgs/01.png" alt=""></div>
-            <div class="question-text d-flex align-items-center"><span>我喜歡吃義大利麵</span></div>
+            <div class="question-text d-flex align-items-center"><span>我喜歡和我的朋友一起去餐廳吃義大利麵</span></div>
         </div>
         <div class="row" style="position: relative;">
             <div class="answer">
@@ -127,6 +132,9 @@
                 <div class="word-bg">
                     <div class="word">eat</div>
                 </div>
+                <div class="word-bg">
+                    <div class="word">spaghetti</div>
+                </div>
             </div>
             <div class="animationWord"></div>
         </div>
@@ -141,28 +149,32 @@
         crossorigin="anonymous"></script>
     <script>
         let transitionSec = 300; //word飛行動畫時間
+        let beforeLeft = 0;
+        let beforeTop = 0;
+        // TODO: 用陣列物件去記錄每個字元的原本座標 before座標的部分就可取代為陣列內的座標
         $('.container').on('click', '.word', function (e) {
+            // 目前點到的word的座標
+            const bLeft = $(this).position().left;
+            const bTop = $(this).position().top;
+            //取得word寬度
+            const wordWidth = $(this).width() + parseInt($(this).css('padding-left')) + parseInt($(this).css('padding-right'));
+
             if ($(this).parent().hasClass('word-bg')) {
                 // 把原本的word藏起來
                 $(this).css('opacity', 0).prop('disabled', true);
-                const wordToUp = $(this).clone().appendTo($('.answer')).css('opacity', 0).css('margin', '0px 5px');
-                // 原word在下層的座標
-                const dLeft = $(this).position().left;
-                const dTop = $(this).position().top;
+                const wordToUp = $(this).clone().appendTo($('.answer')).css('margin', '5px');
                 // 已經先UP的word的座標
-                const wLeft = $(wordToUp).position().left + 5; //word-bg的margin額外加到wordToUp的margin
-                const wTop = $(wordToUp).position().top;
-                //取得word寬度
-                const wordWidth = $(this).width() + parseInt($(this).css('padding-left')) + parseInt($(this).css('padding-right'));
+                const aLeft = $(wordToUp).position().left + 5; //word-bg的margin額外加到wordToUp
+                const aTop = $(wordToUp).position().top + 5;
                 //複製一個word到底層當動畫
                 let newWord = $(this).clone().appendTo($('.animationWord')).css('width', `${wordWidth}px`).css('position', 'absolute').css('transition', `${transitionSec / 1000}s`);
                 // 複製過的word擺好位置
                 function wordAnimation() {
-                    newWord.css('opacity', 1).css('transform', `translate(${dLeft}px, ${dTop}px)`);
+                    newWord.css('opacity', 1).css('transform', `translate(${bLeft}px, ${bTop}px)`);
                 }
                 function wordMoving() {
                     setTimeout(() => {
-                        newWord.css('transform', `translate(${wLeft}px, ${wTop}px)`);
+                        newWord.css('transform', `translate(${aLeft}px, ${aTop}px)`);
                     }, 4);
                 }
                 function wordUp() {
@@ -178,36 +190,29 @@
                     await wordUp();
                 }
                 word();
-
+                beforeLeft = bLeft;
+                beforeTop = bTop;
             } else {
-                const content = $(this).text().toString();
-                // 查看上層word的座標
-                const uLeft = $(this).position().left;
-                const uTop = $(this).position().top;
-                //取得word寬度
-                const wordWidth = $(this).width() + parseInt($(this).css('padding-left')) + parseInt($(this).css('padding-right'));
+                //複製一個word到底層當動畫並擺好位置
+                let newWord = $(this).clone().appendTo($('.animationWord')).css('width', `${wordWidth}px`).css('position', 'absolute').css('transition', `${transitionSec / 1000}s`).css('opacity', 1).css('transform', `translate(${bLeft}px, ${bTop}px)`);
 
-                //複製一個word到底層當動畫
-                let newWord = $(this).clone().appendTo($('.animationWord')).css('width', `${wordWidth}px`).css('position', 'absolute').css('transition', `${transitionSec / 1000}s`);
-                newWord.css('opacity', 1).css('transform', `translate(${uLeft}px, ${uTop}px)`);
-
-                $('.word-bg>.word').each(function () {
-                    if (content === $(this).text()) {
-                        //this = 下層對應word
-                        // 查看下層word的座標
-                        const wLeft = $(this).position().left - 5;
-                        const wTop = $(this).position().top;
-                        setTimeout(() => {
-                            newWord.css('transform', `translate(${wLeft}px, ${wTop}px)`);
-                        }, 4);
-                        setTimeout(() => {
-                            newWord.remove();
+                setTimeout(() => {
+                    newWord.css('transform', `translate(${beforeLeft - 5}px, ${beforeTop - 5}px)`);
+                }, 4);
+                setTimeout(() => {
+                    newWord.remove();
+                    $('.word-bg>.word').each(function(){
+                        const L = $(this).position().left;
+                        const T = $(this).position().top;
+                        if(beforeLeft === L && beforeTop === T){
                             $(this).css('opacity', 1).prop('disabled', false);
-                        }, transitionSec);
-                    }
-                });
+                        }
+                    })
+                }, transitionSec);
+
                 $(this).remove();
             }
+            console.log(beforeLeft, beforeTop);
         });
 
     </script>
