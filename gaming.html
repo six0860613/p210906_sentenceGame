@@ -181,11 +181,9 @@
 
             } else {
                 const content = $(this).text().toString();
-
                 // 查看上層word的座標
                 const uLeft = $(this).position().left;
                 const uTop = $(this).position().top;
-                console.log(uLeft, uTop);
                 //取得word寬度
                 const wordWidth = $(this).width() + parseInt($(this).css('padding-left')) + parseInt($(this).css('padding-right'));
 
