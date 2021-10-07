@@ -59,7 +59,7 @@
             width: 100%;
             margin: 20px 0px;
             padding: 20px;
-            background-color: rgba(235, 235, 235, 0.561);
+            /* background-color: rgba(235, 235, 235, 0.561); */
             border: 2px solid gray;
             border-left: transparent;
             border-right: transparent;
@@ -73,7 +73,6 @@
             padding: 15px 20px;
             font-size: 16px;
             cursor: pointer;
-            transition: 0.3s ease-out;
         }
 
         .word-bg {
@@ -141,41 +140,74 @@
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
     <script>
+        let transitionSec = 300; //word飛行動畫時間
         $('.container').on('click', '.word', function (e) {
             if ($(this).parent().hasClass('word-bg')) {
+                // 把原本的word藏起來
+                $(this).css('opacity', 0).prop('disabled', true);
                 const wordToUp = $(this).clone().appendTo($('.answer')).css('opacity', 0).css('margin', '0px 5px');
-                // 查看下層word的座標
+                // 原word在下層的座標
                 const dLeft = $(this).position().left;
                 const dTop = $(this).position().top;
-                const wLeft = $(wordToUp).position().left;
+                // 已經先UP的word的座標
+                const wLeft = $(wordToUp).position().left + 5; //word-bg的margin額外加到wordToUp的margin
                 const wTop = $(wordToUp).position().top;
-                console.log('dL/wL:', dLeft, wLeft);
-                console.log('dT/wT:', dTop, wTop);
-                const wordWidth = $(this).width();
-                const wordAnimation = $(this).clone().appendTo($('.animationWord')).css('transform', `translate(${dLeft}px, ${dTop}px)`).css('width', `${wordWidth + 40}px`);
+                //取得word寬度
+                const wordWidth = $(this).width() + parseInt($(this).css('padding-left')) + parseInt($(this).css('padding-right'));
+                //複製一個word到底層當動畫
+                let newWord = $(this).clone().appendTo($('.animationWord')).css('width', `${wordWidth}px`).css('position', 'absolute').css('transition', `${transitionSec / 1000}s`);
+                // 複製過的word擺好位置
+                function wordAnimation() {
+                    newWord.css('opacity', 1).css('transform', `translate(${dLeft}px, ${dTop}px)`);
+                }
+                function wordMoving() {
+                    setTimeout(() => {
+                        newWord.css('transform', `translate(${wLeft}px, ${wTop}px)`);
+                    }, 4);
+                }
+                function wordUp() {
+                    setTimeout(() => {
+                        newWord.remove();
+                        wordToUp.css('opacity', 1);
+                    }, transitionSec);
+                }
 
-                // 用計時模擬async await
-                setTimeout(() => {
-                    wordAnimation.css('transform', `translate(${wLeft + 5}px, ${wTop}px)`);
-                }, 100);
-                setTimeout(() => {
-                    wordToUp.css('opacity', 1);
-                    wordAnimation.remove();
-                }, 350);
-                // 把原本的word藏起來
-                $(this).css('opacity', 0);
+                async function word() {
+                    await wordAnimation();
+                    await wordMoving();
+                    await wordUp();
+                }
+                word();
+
             } else {
                 const content = $(this).text().toString();
-                $('.word-bg>.word').each(function () {
-                    if (content === $(this).text()) {
-                        $(this).css('opacity', 1);
-                    }
-                });
+
                 // 查看上層word的座標
                 const uLeft = $(this).position().left;
                 const uTop = $(this).position().top;
-                console.log('uL:', uLeft);
-                console.log('uT:', uTop);
+                console.log(uLeft, uTop);
+                //取得word寬度
+                const wordWidth = $(this).width() + parseInt($(this).css('padding-left')) + parseInt($(this).css('padding-right'));
+
+                //複製一個word到底層當動畫
+                let newWord = $(this).clone().appendTo($('.animationWord')).css('width', `${wordWidth}px`).css('position', 'absolute').css('transition', `${transitionSec / 1000}s`);
+                newWord.css('opacity', 1).css('transform', `translate(${uLeft}px, ${uTop}px)`);
+
+                $('.word-bg>.word').each(function () {
+                    if (content === $(this).text()) {
+                        //this = 下層對應word
+                        // 查看下層word的座標
+                        const wLeft = $(this).position().left - 5;
+                        const wTop = $(this).position().top;
+                        setTimeout(() => {
+                            newWord.css('transform', `translate(${wLeft}px, ${wTop}px)`);
+                        }, 4);
+                        setTimeout(() => {
+                            newWord.remove();
+                            $(this).css('opacity', 1).prop('disabled', false);
+                        }, transitionSec);
+                    }
+                });
                 $(this).remove();
             }
         });
