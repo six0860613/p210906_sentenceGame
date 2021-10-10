@@ -66,10 +66,7 @@
             display: flex;
             box-sizing: border-box;
             flex-wrap: wrap;
-        }
-
-        .answer {
-            min-height: 110px;
+            align-items: baseline;
         }
 
         .word {
@@ -109,33 +106,13 @@
         <div class="row my-3">
             <h3>用英文拼出此句子</h3>
         </div>
-        <div class="row">
+        <div class="row flex-nowrap">
             <div class="question-pic"><img src="./imgs/01.png" alt=""></div>
-            <div class="question-text d-flex align-items-center"><span>我喜歡和我的朋友一起去餐廳吃義大利麵</span></div>
+            <div class="question-text d-flex align-items-center"><span>我喜歡和我的朋友一起吃義大利麵</span></div>
         </div>
         <div class="row" style="position: relative;">
-            <div class="answer">
-            </div>
-            <div class="selectWord">
-                <div class="word-bg">
-                    <div class="word">like</div>
-                </div>
-                <div class="word-bg">
-                    <div class="word">I</div>
-                </div>
-                <div class="word-bg">
-                    <div class="word">spaghetti</div>
-                </div>
-                <div class="word-bg">
-                    <div class="word">to</div>
-                </div>
-                <div class="word-bg">
-                    <div class="word">eat</div>
-                </div>
-                <div class="word-bg">
-                    <div class="word">spaghetti</div>
-                </div>
-            </div>
+            <div class="answer"></div>
+            <div class="selectWord"></div>
             <div class="animationWord"></div>
         </div>
     </div>
@@ -148,14 +125,39 @@
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
     <script>
+        // 問題顯示部分
+        const question = ['I', 'like', 'to', 'eat', 'spaghetti', 'with', 'my', 'friends'];
+        const wordArr = [];
+        question.sort((a, b) => {
+            return Math.random() - 0.5;
+        }); // 隨機排列
+        const newQuestion = [...question];
+        // 畫面呈現
+        for (let i = 0; i < question.length; i++) {
+            question[i] = `<div class="word-bg"><div id="word${i}" class="word">${question[i]}</div></div>`
+            document.querySelector('.selectWord').innerHTML += question[i];
+        }
+        // 設定好答案與選擇區的高度同高
+        const SH = $('.selectWord').css('height');
+        $('.answer').css('height', SH);
+        // 把問題單字呈現後的資訊存在wordArr中
+        newQuestion.forEach((v, i) => {
+            const word = $(`#word${i}`);
+            wordArr[i] = {
+                text: v,
+                x: word.position().left,
+                y: word.position().top,
+            };
+        })
+
+        // 動畫部分
         let transitionSec = 300; //word飛行動畫時間
-        let beforeLeft = 0;
-        let beforeTop = 0;
-        // TODO: 用陣列物件去記錄每個字元的原本座標 before座標的部分就可取代為陣列內的座標
+
         $('.container').on('click', '.word', function (e) {
             // 目前點到的word的座標
-            const bLeft = $(this).position().left;
-            const bTop = $(this).position().top;
+            const wLeft = $(this).position().left;
+            const wTop = $(this).position().top;
+
             //取得word寬度
             const wordWidth = $(this).width() + parseInt($(this).css('padding-left')) + parseInt($(this).css('padding-right'));
 
@@ -167,10 +169,10 @@
                 const aLeft = $(wordToUp).position().left + 5; //word-bg的margin額外加到wordToUp
                 const aTop = $(wordToUp).position().top + 5;
                 //複製一個word到底層當動畫
-                let newWord = $(this).clone().appendTo($('.animationWord')).css('width', `${wordWidth}px`).css('position', 'absolute').css('transition', `${transitionSec / 1000}s`);
+                const newWord = $(this).clone().appendTo($('.animationWord')).css('width', `${wordWidth}px`).css('position', 'absolute').css('transition', `${transitionSec / 1000}s`);
                 // 複製過的word擺好位置
                 function wordAnimation() {
-                    newWord.css('opacity', 1).css('transform', `translate(${bLeft}px, ${bTop}px)`);
+                    newWord.css('opacity', 1).css('transform', `translate(${wLeft}px, ${wTop}px)`);
                 }
                 function wordMoving() {
                     setTimeout(() => {
@@ -190,21 +192,21 @@
                     await wordUp();
                 }
                 word();
-                beforeLeft = bLeft;
-                beforeTop = bTop;
             } else {
                 //複製一個word到底層當動畫並擺好位置
-                let newWord = $(this).clone().appendTo($('.animationWord')).css('width', `${wordWidth}px`).css('position', 'absolute').css('transition', `${transitionSec / 1000}s`).css('opacity', 1).css('transform', `translate(${bLeft}px, ${bTop}px)`);
+                const newWord = $(this).clone().appendTo($('.animationWord')).css('width', `${wordWidth}px`).css('position', 'absolute').css('transition', `${transitionSec / 1000}s`).css('opacity', 1).css('transform', `translate(${wLeft}px, ${wTop}px)`);
+                // 以ID搜尋在wordArr中存的原始座標
+                const wordID = $(this).attr('id');
+                const originLeft = wordArr[parseInt(wordID.replace('word', ''))].x;
+                const originTop = wordArr[parseInt(wordID.replace('word', ''))].y;
 
                 setTimeout(() => {
-                    newWord.css('transform', `translate(${beforeLeft - 5}px, ${beforeTop - 5}px)`);
+                    newWord.css('transform', `translate(${originLeft - 5}px, ${originTop - 5}px)`);
                 }, 4);
                 setTimeout(() => {
                     newWord.remove();
-                    $('.word-bg>.word').each(function(){
-                        const L = $(this).position().left;
-                        const T = $(this).position().top;
-                        if(beforeLeft === L && beforeTop === T){
+                    $('.word-bg>.word').each(function () {
+                        if ($(this).attr('id') === wordID) {
                             $(this).css('opacity', 1).prop('disabled', false);
                         }
                     })
@@ -212,7 +214,6 @@
 
                 $(this).remove();
             }
-            console.log(beforeLeft, beforeTop);
         });
 
     </script>
