@@ -105,10 +105,15 @@
     <div class="container mt-3">
         <div class="row my-3">
             <h3>用英文拼出此句子</h3>
+            <div class="btn-group ml-2" role="group" aria-label="First group">
+                <button type="button" class="btn btn-secondary">1</button>
+                <button type="button" class="btn btn-secondary">2</button>
+                <button type="button" class="btn btn-secondary">3</button>
+            </div>
         </div>
         <div class="row flex-nowrap">
             <div class="question-pic"><img src="./imgs/01.png" alt=""></div>
-            <div class="question-text d-flex align-items-center"><span>我喜歡和我的朋友一起吃義大利麵</span></div>
+            <div class="question-text d-flex align-items-center"><span></span></div>
         </div>
         <div class="row" style="position: relative;">
             <div class="answer"></div>
@@ -125,30 +130,58 @@
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
     <script>
-        // 問題顯示部分
-        const question = ['I', 'like', 'to', 'eat', 'spaghetti', 'with', 'my', 'friends'];
+        const data_arr = [
+            {
+                ques: '我喜歡和我的朋友一起去餐廳吃晚餐',
+                ans: 'I like to go to restaurant for dinner with my friends'
+            },
+            {
+                ques: '閱讀是我的興趣之一',
+                ans: 'Reading is one of my interest'
+            },
+            {
+                ques: '放學後我會去圖書館找一些書',
+                ans: 'I will go to the library to search some books after school'
+            },
+        ];
+        // 問題顯示部分(點了按鈕123才顯示問題)
+        let question = [];
         const wordArr = [];
-        question.sort((a, b) => {
-            return Math.random() - 0.5;
-        }); // 隨機排列
-        const newQuestion = [...question];
-        // 畫面呈現
-        for (let i = 0; i < question.length; i++) {
-            question[i] = `<div class="word-bg"><div id="word${i}" class="word">${question[i]}</div></div>`
-            document.querySelector('.selectWord').innerHTML += question[i];
-        }
-        // 設定好答案與選擇區的高度同高
-        const SH = $('.selectWord').css('height');
-        $('.answer').css('height', SH);
-        // 把問題單字呈現後的資訊存在wordArr中
-        newQuestion.forEach((v, i) => {
-            const word = $(`#word${i}`);
-            wordArr[i] = {
-                text: v,
-                x: word.position().left,
-                y: word.position().top,
-            };
-        })
+
+        $('.btn-secondary').on('click', function () {
+            // 先清空陣列跟頁面顯示的word
+            question = [];
+            document.querySelector('.selectWord').innerHTML = '';
+            // 把data_arr中的問題與答案顯示在頁面上
+            let index = $(this).text() - 1;
+            $('.question-text>span').text(data_arr[index].ques);
+            question = question.concat(data_arr[index].ans.split(' '));
+            // 隨機排列
+            question.sort((a, b) => {
+                return Math.random() - 0.5;
+            }); 
+            const newQuestion = [...question];
+            // 畫面呈現
+            for (let i = 0; i < question.length; i++) {
+                question[i] = `<div class="word-bg"><div id="word${i}" class="word">${question[i]}</div></div>`
+                document.querySelector('.selectWord').innerHTML += question[i];
+            }
+            // 設定好答案與選擇區的高度同高
+            const SH = $('.selectWord').css('height');
+            $('.answer').css('height', SH);
+            // 把問題單字呈現後的資訊存在wordArr中
+            newQuestion.forEach((v, i) => {
+                const word = $(`#word${i}`);
+                wordArr[i] = {
+                    text: v,
+                    x: word.position().left,
+                    y: word.position().top,
+                };
+            })
+        });
+
+
+
 
         // 動畫部分
         let transitionSec = 300; //word飛行動畫時間
