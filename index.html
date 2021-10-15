@@ -71,20 +71,23 @@
 
         .word {
             background-color: #afa;
-            border-radius: 10px;
+            border-radius: 15px;
             padding: 15px 20px;
             font-size: 16px;
             cursor: pointer;
+            box-shadow: 2px 2px 2px rgb(148, 148, 148, 0.5);
         }
 
         .word-bg {
             background-color: rgb(148, 148, 148, 0.5);
-            border-radius: 10px;
+            border-radius: 15px;
             margin: 5px;
         }
 
         .word:hover {
             opacity: 0.6;
+            box-shadow: 2px 2px 2px rgb(148, 148, 148, 0.5), 2px 2px 2px rgb(148, 148, 148, 0.5) inset;
+            ;
         }
 
         .animationWord {
@@ -120,6 +123,10 @@
             <div class="selectWord"></div>
             <div class="animationWord"></div>
         </div>
+        <div class="row justify-content-end align-items-center">
+            <span class="result"></span>
+            <button type="button" class="btn btn-success ml-5 sendAns">送出</button>
+        </div>
     </div>
 
     <script src="./jquery-3.6.0.min.js"></script>
@@ -132,8 +139,8 @@
     <script>
         const data_arr = [
             {
-                ques: '我喜歡和我的朋友一起去餐廳吃晚餐',
-                ans: 'I like to go to restaurant for dinner with my friends'
+                ques: '我喜歡和我的朋友一起去看電影',
+                ans: 'I like to watch movies with my friends'
             },
             {
                 ques: '閱讀是我的興趣之一',
@@ -147,19 +154,22 @@
         // 問題顯示部分(點了按鈕123才顯示問題)
         let question = [];
         const wordArr = [];
-
+        let questionID = -1;
         $('.btn-secondary').on('click', function () {
             // 先清空陣列跟頁面顯示的word
             question = [];
             document.querySelector('.selectWord').innerHTML = '';
+            document.querySelector('.answer').innerHTML = '';
+            document.querySelector('.result').innerHTML = '';
             // 把data_arr中的問題與答案顯示在頁面上
-            let index = $(this).text() - 1;
+            const index = $(this).text() - 1;
+            questionID = index;
             $('.question-text>span').text(data_arr[index].ques);
             question = question.concat(data_arr[index].ans.split(' '));
             // 隨機排列
             question.sort((a, b) => {
                 return Math.random() - 0.5;
-            }); 
+            });
             const newQuestion = [...question];
             // 畫面呈現
             for (let i = 0; i < question.length; i++) {
@@ -177,15 +187,11 @@
                     x: word.position().left,
                     y: word.position().top,
                 };
-            })
+            });
         });
-
-
-
 
         // 動畫部分
         let transitionSec = 300; //word飛行動畫時間
-
         $('.container').on('click', '.word', function (e) {
             // 目前點到的word的座標
             const wLeft = $(this).position().left;
@@ -244,10 +250,23 @@
                         }
                     })
                 }, transitionSec);
-
                 $(this).remove();
             }
         });
+
+        // 送出答案部分
+        $('.sendAns').on('click', function () {
+            let str = '';
+            $('.answer>.word').each(function () {
+                str += $(this).text() + ' ';
+            })
+            console.log('送出:', str.indexOf(data_arr[questionID].ans));
+            if(str.indexOf(data_arr[questionID].ans) == 0){
+                $('.result').text('Correct!');
+            }else{
+                $('.result').text('Wrong!');
+            }
+        })
 
     </script>
 </body>
